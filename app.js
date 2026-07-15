@@ -1,4 +1,4 @@
-const API_BASE = 'https://sound.flying-bread.top/api';
+const API_BASE = 'https://sound.flying-bread.top';
 const state = {
   files: [],
   regions: {},

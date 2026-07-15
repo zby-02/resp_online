@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>呼吸音在线预处理</title>
+  <link rel="stylesheet" href="/site/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div>
+        <h1>呼吸音在线预处理</h1>
+        <p class="subtitle">支持一次上传 8 个音频文件，完成增益、背景噪声扣除、摩擦高频噪声抑制、心音衰减、研究型 RR/HR 估计，以及疑似干啰音 / 湿啰音提示。</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>第一步：上传音频</h2>
+      <p>支持 mp3 / wav / m4a / aac / ogg / flac。一次最多 8 个文件。</p>
+      <input id="fileInput" type="file" accept="audio/*,.wav,.mp3,.m4a,.aac,.ogg,.flac" multiple />
+      <div id="fileHint" class="hint">尚未选择文件</div>
+      <div id="fileList" class="file-list"></div>
+    </section>
+
+    <section class="card settings-grid">
+      <div>
+        <h2>第二步：设置处理参数</h2>
+        <label>
+          <span>全局增益（dB）</span>
+          <input id="gainDb" type="number" value="6" step="0.5" min="-24" max="24" />
+        </label>
+      </div>
+      <div class="checkbox-grid">
+        <label><input id="noiseReduction" type="checkbox" checked /> 扣除手工框选的环境背景噪声</label>
+        <label><input id="frictionSuppression" type="checkbox" checked /> 抑制衣物摩擦 / 胸壁活动高频噪声</label>
+        <label><input id="heartSuppression" type="checkbox" checked /> 衰减心音，仅保留呼吸音为主</label>
+        <label><input id="estimateRR" type="checkbox" checked /> 估计呼吸频率</label>
+        <label><input id="estimateHR" type="checkbox" checked /> 估计心率（研究型，可能失败）</label>
+        <label><input id="detectWheeze" type="checkbox" checked /> 提示疑似干啰音 / wheeze</label>
+        <label><input id="detectCrackle" type="checkbox" checked /> 提示疑似湿啰音 / crackle</label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>第三步：开始批量处理</h2>
+      <p>建议你先为每个文件手工框选一小段“纯环境噪声”区域。比如尚未接触胸壁、只有环境底噪的片段。</p>
+      <div class="actions">
+        <button id="processBtn" class="primary">开始批量处理</button>
+        <button id="clearBtn" class="secondary">清空当前文件列表</button>
+      </div>
+      <div id="statusBox" class="status-box">等待处理</div>
+    </section>
+
+    <section id="resultsSection" class="card hidden">
+      <div class="results-head">
+        <h2>处理结果</h2>
+        <a id="zipLink" class="primary-link" href="#" target="_blank" rel="noopener">下载全部结果压缩包</a>
+      </div>
+      <div id="resultsList" class="results-list"></div>
+    </section>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-head">
+        <h3 id="modalTitle">选择环境噪声区间</h3>
+        <button id="closeModalBtn" class="close-btn">×</button>
+      </div>
+      <p>在框选前，可以先试听整段音频；框选后，也可以试听选中的那一段。建议选择 0.3–2 秒、尽量纯净的环境噪声。</p>
+      <div class="player-toolbar">
+        <button id="playFullBtn" class="secondary">播放 / 暂停整段</button>
+        <button id="stopAudioBtn" class="secondary">停止</button>
+        <button id="playSelectionBtn" class="primary" disabled>试听当前框选</button>
+      </div>
+      <div id="playbackInfo" class="hint">音频尚未开始播放</div>
+      <div id="waveform"></div>
+      <div id="selectionInfo" class="hint">尚未选择区间</div>
+      <div class="actions modal-actions">
+        <button id="saveRegionBtn" class="primary">保存这个区间</button>
+        <button id="clearRegionBtn" class="secondary">删除该文件区间</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/wavesurfer.js@7"></script>
+  <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/regions.min.js"></script>
+  <script src="/site/app.js"></script>
+</body>
+</html>
